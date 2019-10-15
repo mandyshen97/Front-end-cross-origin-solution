@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+</head>
+
+<body>
+	<iframe id="iframe" src="http://127.0.0.1:1002/MESSAGE/B.html" frameborder="0" style="display: none;"></iframe>
+	<script>
+		iframe.onload = function () {
+			iframe.contentWindow.postMessage('信息', 'http://127.0.0.1:1002/');
+		}
+
+		//=>监听B传递的信息
+		window.onmessage = function (ev) {
+			console.log(ev.data);
+		}
+	</script>
+</body>
+
+</html>
