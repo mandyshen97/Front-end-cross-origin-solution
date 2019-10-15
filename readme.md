@@ -1,15 +1,14 @@
 # 前端跨域解决方案
-## 跨域问题的产生及其价值意义
+## 一、跨域问题的产生及其价值意义
 跨域（非同源策略请求），是由浏览器的安全机制引起的。
 三者都一样就是同源，只要有一个不同就是跨域
 - 协议
 - 域名
 - 端口号
-  WEB服务器地址：http://127.0.0.1:3000/index.html
-  数据接口地址：http://127.0.0.1:4000/list
-前端（跨域）的发展：
-
-1、没有专门的前端，由后端一起做。
+  <br>WEB服务器地址：http://127.0.0.1:3000/index.html<br>
+ 数据接口地址：http://127.0.0.1:4000/list
+### 前端（跨域）的发展：
+1、没有专门的前端，由后端一起做。<br>
 2、前后端分开，部署的时候部署在同一个服务器，这样就不存在跨域问题。但是，开发的时候前后端是分开的，还是会存在跨域，怎么办呢？有的公司要求前端也用idea进行开发，也就是前端代码外面包一层java或其它后端代码，运行的时候也要运行后端服务，这样的做法给前端开发加大了难度。
 
 - 同源策略请求  ajax / fetch
@@ -25,8 +24,9 @@
 
 http://127.0.0.1:1234/index.html
 http://api.qq.com/getData
+<br>
 3、前后端完全分离，分开开发，分开部署web服务器，data服务器，图片服务器。 第三方开源的数据接口也会引起跨域（这样的情况非常多）。
-## JSONP跨域解决方案的底层原理
+## 二、JSONP跨域解决方案的底层原理
 - script
 - img
 - link
@@ -37,14 +37,14 @@ http://api.qq.com/getData
 <script src="https://cdn.bootcss.com/jquery/3.4.1/core.js"></script>
 // 这个就是因为script标签没有跨域限制，所以才能成功请求加载。
 ```
-核心原理图：
-![JSONP核心原理图]('./JSONP.png)
+JSONP核心原理图：
+![JSONP核心原理图](./JSONP.png)
 react中子组件想要修改父组件中的状态，也是传递一个回调函数给父组件，这个思想和JSONP的思想是一致的。
 
 * JSONP需要服务器端的支持
 
-* 问题：JSONP只能处理GET请求（放在？后面不安全，服务器返回的数据在浏览器会直接执行，如果是木马修改的呢？也会直接执行，不安全）
-举例：
+* 问题：JSONP只能处理GET请求（放在'？'后面不安全，服务器返回的数据在浏览器会直接执行，如果是木马修改的呢？也会直接执行，不安全）
+### 举例：
 
 * html页面：1.jsonp.html
 
@@ -64,7 +64,7 @@ react中子组件想要修改父组件中的状态，也是传递一个回调函
 </body>
 
 </html>
-```jsonp.html
+```
 
 * 1.jsonp.js
 
@@ -98,7 +98,7 @@ app.get('/list', (req, res) => {
 	res.send(`${callback}(${JSON.stringify(data)})`); //=>后端需要处理好这样的数据格式
 });
 ```
-## CORS跨域资源共享
+## 三、CORS跨域资源共享
 **客户端正常发送请求，服务端设置相关的头信息。**
 * 客户端（发送ajax/fetch请求）
 ```
@@ -139,11 +139,11 @@ app.use((req, res, next) => {
     next();
 });
 ```
-## 基于http proxy实现跨域请求
+## 四、基于`http proxy`实现跨域请求
 ```
 http proxy  =>webpack webpack-dev-server
 ```
-修改webpack.config.js
+修改`webpack.config.js`
 ```
 let path = require('path');
 let HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -173,11 +173,11 @@ module.exports = {
 	]
 };
 ```
-## 基于post message实现跨域处理
+## 五、基于`post message`实现跨域处理
 
-## ngnix反向代理 =>不需要前端做什么
+## 六、`ngnix`反向代理 =>不需要前端做什么
 
-## 基于iframe的跨域解决方案：
-### 	window.name / document.domin / location.hash
-## web scoket 和 nginx反向代理
-## socket.io
+## 七、基于`iframe`的跨域解决方案：
+### 	`window.name / document.domin / location.hash`
+## 八、`web scoket` 和 `nginx`反向代理
+## 九、`socket.io`
