@@ -34,22 +34,22 @@ axios.defaults.validateStatus = function (status) {
 ==============
 
 ### document.domain + iframe
-只能实现：同一个主域，不同子域之间的操作
-v.qq.com
+只能实现：同一个主域，不同子域之间的操作<br>
+v.qq.com<br>
 sports.qq.com
 
-父页面A  http://www.zhufengpeixun.cn/A.html
+父页面A  http://www.github.cn/A.html
 ```
-<iframe src="http://school.zhufengpeixun.cn/B.html"></iframe>
+<iframe src="http://school.github.cn/B.html"></iframe>
 <script>
-    document.domain = 'zhufengpeixun.cn';
+    document.domain = 'github.cn';
     var user = 'admin';
 </script>
 ```
-子页面B  http://school.zhufengpeixun.cn/B.html
+子页面B  http://school.github.cn/B.html
 ```
 <script>
-    document.domain = 'zhufengpeixun.cn';
+    document.domain = 'github.cn';
     alert(window.parent.user);
 </script>
 ```
@@ -66,7 +66,7 @@ A和B非同源
     let iframe = document.getElementById('iframe');
     //=>向B.html传hash值
     iframe.onload=function(){
-       iframe.src = 'http://127.0.0.1:1002/B.html#msg=zhufengpeixun';
+       iframe.src = 'http://127.0.0.1:1002/B.html#msg=github';
     }
     
     //=>开放给同域C.html的回调方法
@@ -109,7 +109,7 @@ let proxy = function(url, callback) {
     iframe.src = url;
     iframe.onload = function() {
         if(count===0){
-          iframe.contentWindow.location = 'http://www.zhufengpeixun.cn/proxy.html';
+          iframe.contentWindow.location = 'http://www.github.cn/proxy.html';
           count++;
           return;
         }
@@ -119,14 +119,14 @@ let proxy = function(url, callback) {
 };
 
 //请求跨域B页面数据
-proxy('http://www.zhufengpeixun.cn/B.html', function(data){
+proxy('http://www.github.cn/B.html', function(data){
     alert(data);
 });
 ```
 
 B页面
 ```
-window.name = 'zhufengpeixun';
+window.name = 'github';
 ```
 
 proxy.html是空页面
@@ -138,11 +138,11 @@ https://developer.mozilla.org/zh-CN/docs/Web/API/Window/postMessage
 
 A页面
 ```
-<iframe src="http://www.zhufengpeixun.com/B.html"></iframe>
+<iframe src="http://www.github.com/B.html"></iframe>
 <script>
     let iframe = document.querySelector('iframe');
     iframe.onload = function () {
-        iframe.contentWindow.postMessage('zhufengpeixun', 'http://www.zhufengpeixun.com/');
+        iframe.contentWindow.postMessage('github', 'http://www.github.com/');
     }
     window.onmessage = function (ev) {
         console.log(ev.data);
@@ -177,7 +177,7 @@ socket.on('connect', function() {
     });
 });
 //=>发送消息给服务器端
-socket.send("zhufengpeixun");
+socket.send("github");
 </script>
 ```
 
@@ -200,16 +200,16 @@ socket.listen(server).on('connection', function(client) {
 
 ==========================
 ### nginx反向代理
-www.zhufengpeixun.cn -> www.zhufengpeixun.com
+www.github.cn -> www.github.com
 ```
 #proxy服务器
 server {
     listen       80;
-    server_name  www.zhufengpeixun.com;
+    server_name  www.github.com;
     location / {
-        proxy_pass   www.zhufengpeixun.cn; #反向代理
-        proxy_cookie_demo www.zhufengpeixun.cn www.zhufengpeixun.com;
-        add_header Access-Control-Allow-Origin www.zhufengpeixun.cn;
+        proxy_pass   www.github.cn; #反向代理
+        proxy_cookie_demo www.github.cn www.github.com;
+        add_header Access-Control-Allow-Origin www.github.cn;
         add_header Access-Control-Allow-Credentials true;
     }
 }

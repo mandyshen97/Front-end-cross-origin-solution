@@ -174,10 +174,177 @@ module.exports = {
 };
 ```
 ## 五、基于`post message`实现跨域处理
+https://developer.mozilla.org/zh-CN/docs/Web/API/Window/postMessage
 
+A页面
+```
+<iframe src="http://www.github.com/B.html"></iframe>
+<script>
+    let iframe = document.querySelector('iframe');
+    iframe.onload = function () {
+        iframe.contentWindow.postMessage('github', 'http://www.github.com/');
+    }
+    window.onmessage = function (ev) {
+        console.log(ev.data);
+    }
+</script>
+```
+
+B页面
+```
+window.onmessage = function (ev) {
+    console.log(ev.data);
+    ev.source.postMessage(ev.data+'@@', ev.origin);
+}
+```
 ## 六、`ngnix`反向代理 =>不需要前端做什么
-
+www.github.cn -> www.github.com
+```
+#proxy服务器
+server {
+    listen       80;
+    server_name  www.github.com;
+    location / {
+        proxy_pass   www.github.cn; #反向代理
+        proxy_cookie_demo www.github.cn www.github.com;
+        add_header Access-Control-Allow-Origin www.github.cn;
+        add_header Access-Control-Allow-Credentials true;
+    }
+}
+```
 ## 七、基于`iframe`的跨域解决方案：
 ### 	`window.name / document.domin / location.hash`
-## 八、`web scoket` 和 `nginx`反向代理
-## 九、`socket.io`
+### window.name + iframe
+页面A
+```
+let proxy = function(url, callback) {
+    let count = 0;
+    let iframe = document.createElement('iframe');
+    iframe.src = url;
+    iframe.onload = function() {
+        if(count===0){
+          iframe.contentWindow.location = 'http://www.github.cn/proxy.html';
+          count++;
+          return;
+        }
+        callback(iframe.contentWindow.name);
+    };
+    document.body.appendChild(iframe);
+};
+
+//请求跨域B页面数据
+proxy('http://www.github.cn/B.html', function(data){
+    alert(data);
+});
+```
+
+B页面
+```
+window.name = 'github';
+```
+
+proxy.html是空页面
+
+### location.hash + iframe
+A和C同源
+A和B非同源
+
+页面A
+```
+<iframe id="iframe" src="http://127.0.0.1:1002/B.html" style="display:none;"></iframe>
+<script>
+    let iframe = document.getElementById('iframe');
+    //=>向B.html传hash值
+    iframe.onload=function(){
+       iframe.src = 'http://127.0.0.1:1002/B.html#msg=github';
+    }
+    
+    //=>开放给同域C.html的回调方法
+    function func(res) {
+        alert(res);
+    }
+</script>
+```
+
+页面B
+```
+<iframe id="iframe" src="http://127.0.0.1:1001/C.html" style="display:none;"></iframe>
+<script>
+    let iframe = document.getElementById('iframe');
+    //=>监听A传来的HASH值改变，再传给C.html
+    window.onhashchange = function () {
+        iframe.src = "http://127.0.0.1:1001/C.html"+ location.hash;
+    }
+</script>
+```
+
+页面C
+```
+<script>
+    //=>监听B传来的HASH值
+    window.onhashchange = function () {
+        //=>再通过操作同域A的js回调，将结果传回
+        window.parent.parent.func(location.hash);
+    };
+</script>
+```
+
+### document.domain + iframe
+只能实现：同一个主域，不同子域之间的操作<br>
+v.qq.com<br>
+sports.qq.com
+
+父页面A  http://www.github.cn/A.html
+```
+<iframe src="http://school.github.cn/B.html"></iframe>
+<script>
+    document.domain = 'github.cn';
+    var user = 'admin';
+</script>
+```
+子页面B  http://school.github.cn/B.html
+```
+<script>
+    document.domain = 'github.cn';
+    alert(window.parent.user);
+</script>
+```
+## 八、WebSocket协议跨域
+前端处理
+```
+<script src="./socket.io.js"></script>
+<script>
+let socket = io('http://127.0.0.1:3001/');
+//=>连接成功处理
+socket.on('connect', function() {
+    //=>监听服务端消息
+    socket.on('message', function(msg) {
+        console.log('data from server:' + msg); 
+    });
+    //=>监听服务端关闭
+    socket.on('disconnect', function() { 
+        console.log('server socket has closed!');
+    });
+});
+//=>发送消息给服务器端
+socket.send("github");
+</script>
+```
+
+服务器端处理
+```
+//=>监听socket连接：server是服务器创建的服务
+socket.listen(server).on('connection', function(client) {
+    //=>接收信息
+    client.on('message', function(msg) {
+        //=>msg客户端传递的信息
+        //...
+        client.send(msg+'@@');
+    });
+    //=>断开处理
+    client.on('disconnect', function() {
+        console.log('client socket has closed!');
+    });
+});
+```
+
